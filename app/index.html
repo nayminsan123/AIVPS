@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111318"><title>Private Chat</title>
+  <link rel="stylesheet" href="/static/app.css"><script src="/static/app.js" defer></script>
+</head>
+<body>
+  <section id="login" class="login hidden">
+    <h1>Sign in</h1><p class="muted">Private access to your local model.</p>
+    <form id="login-form"><label>Username<input name="username" autocomplete="username" required maxlength="128"></label><label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="256"></label><div class="error" id="login-error" role="alert"></div><button>Sign in</button></form>
+  </section>
+  <main id="app" class="shell hidden">
+    <header class="top"><div><h1>Private Chat</h1><div class="muted"><span id="model-name"></span> · Signed in as <span id="username"></span></div></div><button id="logout" class="ghost">Sign out</button></header>
+    <nav id="tabs" class="tabs hidden"><button class="tab active" data-panel="chat-panel">Chat</button><button class="tab" data-panel="admin-panel">Admin</button></nav>
+    <section id="chat-panel" class="panel chat-panel"><div id="messages" class="messages" aria-live="polite"></div><form id="chat-form" class="composer"><textarea id="prompt" placeholder="Write a message…" required maxlength="12000"></textarea><button id="send">Send</button></form></section>
+    <section id="admin-panel" class="panel admin-panel hidden">
+      <div class="admin-grid">
+        <section class="card"><h2>AI settings</h2><form id="settings-form"><label>System prompt<textarea id="system-prompt" maxlength="4000" rows="5" placeholder="Optional instructions applied to every chat"></textarea></label><div class="fields"><label>Temperature<input id="temperature" type="number" min="0" max="2" step="0.05" required></label><label>Top-p<input id="top-p" type="number" min="0.01" max="1" step="0.01" required></label><label>Maximum output tokens<input id="max-tokens" type="number" min="16" max="2048" step="1" required></label></div><p class="muted">Context length is fixed at <strong>4,096 tokens</strong> in this deployment. Changing it requires a server restart and enough RAM.</p><div id="settings-status" class="status" role="status"></div><button>Save AI settings</button></form></section>
+        <section class="card"><h2>Add user</h2><form id="user-form"><label>Username<input name="username" autocomplete="off" required minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9_.-]{2,31}"></label><label>Temporary password<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="256"></label><label>Role<select name="role"><option value="user">User</option><option value="admin">Administrator</option></select></label><div id="user-status" class="status" role="status"></div><button>Add user</button></form></section>
+      </div>
+      <section class="card users-card"><div class="section-heading"><h2>Users</h2><button id="refresh-users" class="ghost">Refresh</button></div><div id="users-list" class="users-list"></div></section>
+    </section>
+  </main>
+</body></html>

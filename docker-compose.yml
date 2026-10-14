@@ -1,0 +1,50 @@
+services:
+  chat:
+    build: ./app
+    restart: unless-stopped
+    environment:
+      APP_USERNAME: ${APP_USERNAME:?Set APP_USERNAME in .env}
+      APP_PASSWORD: ${APP_PASSWORD:?Set APP_PASSWORD in .env}
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
+      MODEL_NAME: ${MODEL_NAME:-Qwen3.5-4B-Uncensored-HauhauCS-Aggressive}
+      LLAMA_URL: http://llama:8080
+      DB_PATH: /data/chat.sqlite3
+    depends_on: [llama]
+    volumes:
+      - chat_data:/data
+    networks: [private]
+
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    restart: unless-stopped
+    command: ["-m", "/models/model.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "4096", "-np", "1", "--threads", "${LLAMA_THREADS:-4}", "--no-webui"]
+    volumes:
+      - ./models:/models:ro
+    networks: [private]
+    # Deliberately no published host port: model API stays private.
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [chat]
+    networks: [private, edge]
+
+networks:
+  private:
+    internal: true
+  edge: {}
+
+volumes:
+  chat_data:
+  caddy_data:
+  caddy_config:
