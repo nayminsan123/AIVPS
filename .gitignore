@@ -1,0 +1,18 @@
+# Environment files and secrets; keep the safe template tracked.
+.env
+.env.*
+!.env.example
+
+# Model weights and local persistent data.
+models/
+data/
+*.gguf
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+
+# Python cache and local tooling.
+__pycache__/
+*.py[cod]
+.venv/
